@@ -1,1 +1,70 @@
+# ==========================================
+# Tugas Pertemuan 6: OOP Inheritance Lab
+# Nama : [Mufid Aditya]
+# NIM  : [462025611063]
+# ==========================================
 
+class Perangkat:
+    """Kelas Induk Utama (Grandparent Class)"""
+    def __init__(self, merk):
+        self.merk = merk
+        print(f"[{self.merk}] Menginisialisasi basis data Perangkat.")
+
+    def info(self):
+        return f"Perangkat Merk: {self.merk}"
+
+
+class Smartphone(Perangkat):
+    """Kelas Turunan Pertama (Parent Class 1)"""
+    def __init__(self, merk, OS):
+        # Menggunakan super() untuk meneruskan argumen ke Perangkat
+        super().__init__(merk)
+        self.OS = OS
+        print(f"[{self.merk}] Menginisialisasi fitur Smartphone dengan OS {self.OS}.")
+
+    def info(self):
+        # Mengambil info dari Perangkat, lalu menambahkan info Smartphone
+        return f"{super().info()} | OS: {self.OS}"
+
+
+class Kamera(Perangkat):
+    """Kelas Turunan Kedua (Parent Class 2)"""
+    def __init__(self, merk, resolusi):
+        # Menggunakan super() untuk meneruskan argumen ke Perangkat
+        super().__init__(merk)
+        self.resolusi = resolusi
+        print(f"[{self.merk}] Menginisialisasi fitur Kamera sebesar {self.resolusi} MP.")
+
+    def info(self):
+        # Mengambil info dari Perangkat/Smartphone (sesuai MRO), lalu menambahkan info Kamera
+        return f"{super().info()} | Resolusi: {self.resolusi} MP"
+
+
+class SmartphoneKamera(Smartphone, Kamera):
+    """Kelas Cucu (Child Class - Multiple Inheritance)
+    Mendemonstrasikan penyelesaian Diamond Problem
+    """
+    def __init__(self, merk, OS, resolusi, model_fitur):
+        # super() di sini akan otomatis mengikuti urutan MRO:
+        # SmartphoneKamera -> Smartphone -> Kamera -> Perangkat
+        super().__init__(merk, OS=OS, resolusi=resolusi)
+        self.model_fitur = model_fitur
+        print(f"[{self.merk}] Menginisialisasi SmartphoneKamera Model: {self.model_fitur}.\n")
+
+    def info(self):
+        return f"{super().info()} | Fitur Unggulan: {self.model_fitur}"
+
+
+# --- Uji Coba Program ---
+if __name__ == "__main__":
+    print("--- Memulai Instansiasi Objek (Melihat Alur super()) ---")
+    # Membuat objek dari kelas yang mengalami Diamond Problem
+    gadget_baru = SmartphoneKamera(merk="Samsung", OS="Android", resolusi=108, model_fitur="Ultra Zoom")
+
+    print("--- Menampilkan Informasi Produk ---")
+    print(gadget_baru.info())
+    
+    print("\n--- Menampilkan Method Resolution Order (MRO) ---")
+    # Melihat urutan eksekusi kelas yang dilewati Python
+    for index, kelas in enumerate(SmartphoneKamera.__mro__, 1):
+        print(f"{index}. {kelas.__name__}")
